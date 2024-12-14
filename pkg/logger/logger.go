@@ -2,6 +2,7 @@ package logger
 
 import (
 	"os"
+	"time"
 
 	"github.com/rs/zerolog"
 )
@@ -10,14 +11,19 @@ var logger zerolog.Logger
 
 func init() {
 
-	logFile, err := os.OpenFile("application.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		panic(err)
-	}
+	// logFile, err := os.OpenFile("application.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	// Configure zerolog logger
-	logger = zerolog.New(logFile).With().Caller().Timestamp().Logger()
-	zerolog.SetGlobalLevel(zerolog.DebugLevel) // Set global log level (optional)
+	// // Configure zerolog logger
+	// logger = zerolog.New(logFile).With().Caller().Timestamp().Logger()
+	// zerolog.SetGlobalLevel(zerolog.DebugLevel) // Set global log level (optional)
+
+	logger = zerolog.New(zerolog.ConsoleWriter{
+		Out:        os.Stderr,
+		TimeFormat: time.RFC3339,
+	}).Level(zerolog.TraceLevel).With().Timestamp().Caller().Logger()
 
 }
 

@@ -2,6 +2,9 @@ package server
 
 import (
 	"cart-service/config/database"
+	"cart-service/internal/handler"
+	"cart-service/internal/repository"
+	"cart-service/internal/usecase"
 	"cart-service/pkg/logger"
 	"log"
 
@@ -32,14 +35,33 @@ func (s *fiberServer) Use(args interface{}) {
 
 func (s *fiberServer) Start() {
 	// Define routes
+
 	s.app.Get("/", func(c *fiber.Ctx) error {
 		return c.Status(200).SendString("Hello from Fiber!")
 	})
 
 	logger.Info().Msg("This is an info message")
-	logger.Warn().Str("user", "john_doe").Msg("This is a warning message")
+	// logger.Warn().Str("user", "john_doe").Msg("This is a warning message")
+	logger.Warn().Msg("This is a warning message")
 
-	// Start the server
-	// s.app.Listen(":5000")
+	s.initializeCartServiceHttpHandler()
+
 	log.Fatal(s.app.Listen(":5000"))
+}
+
+func (s *fiberServer) initializeCartServiceHttpHandler() {
+
+	// repository
+	cartRepo := repository.NewCartRepository(s.db)
+
+	// use case
+	cartUsecase := usecase.NewCartUsecaseImpl(cartRepo)
+
+	// handler
+
+	cartHandler := handler.NewCartHttpHandle(cartUsecase)
+
+	// router
+	s.app.Post("/cart", cartHandler.InsertNewCart)
+
 }
