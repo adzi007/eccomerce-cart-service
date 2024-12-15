@@ -37,7 +37,7 @@ func (s *fiberServer) Start() {
 	// Define routes
 
 	s.app.Get("/", func(c *fiber.Ctx) error {
-		return c.Status(200).SendString("Hello from Fiber!")
+		return c.Status(200).SendString("Hello from Fiber! ini pesan dari admin")
 	})
 
 	logger.Info().Msg("This is an info message")
