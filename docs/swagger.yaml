@@ -1,0 +1,48 @@
+definitions:
+  entity.InsertCartDto:
+    properties:
+      user_id:
+        type: string
+    type: object
+  handler.CartResponse:
+    properties:
+      pesan:
+        description: Response message
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is a sample swagger for Fiber
+  termsOfService: http://swagger.io/terms/
+  title: Ecommerce Cart Service
+  version: "1.0"
+paths:
+  /cart:
+    post:
+      consumes:
+      - application/json
+      description: API to create a new cart
+      parameters:
+      - description: New Cart Details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/entity.InsertCartDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.CartResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new cart
+      tags:
+      - Cart
+swagger: "2.0"

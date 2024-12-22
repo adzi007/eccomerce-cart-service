@@ -9,6 +9,11 @@ import (
 	"github.com/gofiber/contrib/fiberzerolog"
 )
 
+//	@title			Ecommerce Cart Service
+//	@version		1.0
+//	@description	This is a sample swagger for Fiber
+//	@termsOfService	http://swagger.io/terms/
+
 func main() {
 
 	config.LoadConfig()

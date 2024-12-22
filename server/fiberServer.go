@@ -8,7 +8,10 @@ import (
 	"cart-service/pkg/logger"
 	"log"
 
+	_ "cart-service/docs"
+
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/swagger" // swagger handler
 )
 
 type fiberServer struct {
@@ -20,6 +23,8 @@ type fiberServer struct {
 func NewFiberServer(db database.Database) Server {
 	fiberApp := fiber.New()
 	// fiberApp.Logger.SetLevel(log.DEBUG)
+
+	fiberApp.Get("/docs/*", swagger.HandlerDefault)
 
 	return &fiberServer{
 		app: fiberApp,
