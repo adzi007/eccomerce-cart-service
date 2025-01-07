@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  golang:
+    build:
+      context: .
+    container_name: ecommerce-cart-service
+    networks:
+      - ecommerce-network
+    depends_on:
+      - mysql
+    ports:
+      - "5000:5000" # Map Golang port for external access
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3308
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+
+  mysql:
+    image: mysql:8.0
+    container_name: ecommerce-mysql-service
+    restart: always
+    networks:
+      - ecommerce-network
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    ports:
+      - "3308:3306"
+
+networks:
+  ecommerce-network:
+    # external: true
