@@ -57,3 +57,12 @@ func (h *cartHttpHandler) InsertNewCart(ctx *fiber.Ctx) error {
 		"pesan": "success create a new cart 1",
 	})
 }
+
+func (h *cartHttpHandler) GetCustomerCart(ctx *fiber.Ctx) error {
+
+	h.cartUsecase.GetCustomerCart()
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"pesan": "Test call another service",
+	})
+}

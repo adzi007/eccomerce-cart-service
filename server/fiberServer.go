@@ -41,9 +41,9 @@ func (s *fiberServer) Use(args interface{}) {
 func (s *fiberServer) Start() {
 	// Define routes
 
-	s.app.Get("/", func(c *fiber.Ctx) error {
-		return c.Status(200).SendString("Hello from Fiber! ini pesan dari admin")
-	})
+	// s.app.Get("/", func(c *fiber.Ctx) error {
+	// 	return c.Status(200).SendString("Hello from Fiber! ini pesan dari admin")
+	// })
 
 	logger.Info().Msg("This is an info message")
 	// logger.Warn().Str("user", "john_doe").Msg("This is a warning message")
@@ -68,5 +68,6 @@ func (s *fiberServer) initializeCartServiceHttpHandler() {
 
 	// router
 	s.app.Post("/cart", cartHandler.InsertNewCart)
+	s.app.Get("/", cartHandler.GetCustomerCart)
 
 }

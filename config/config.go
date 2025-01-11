@@ -15,6 +15,7 @@ type Config struct {
 	DB_PORT     string
 	DB_NAME     string
 	PORT_AP     string
+	API_GATEWAY string
 }
 
 var (
