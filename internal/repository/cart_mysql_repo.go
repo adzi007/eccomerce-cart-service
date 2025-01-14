@@ -52,3 +52,44 @@ func (r *cartMysqlRepository) InsertCart(data *entity.InsertCartDto) error {
 	return nil
 
 }
+
+func (r *cartMysqlRepository) GetCartByUser(userId string) (error, []entity.Cart) {
+
+	var carts []entity.Cart
+
+	filter := entity.Cart{UserId: userId}
+
+	cartResult := r.db.GetDb().Where(&filter).Find(&carts)
+
+	return cartResult.Error, carts
+}
+
+func (r *cartMysqlRepository) UpdateQty(cartId uint, qty uint) error {
+
+	var cart entity.Cart
+
+	if err := r.db.GetDb().First(&cart, cartId).Error; err != nil {
+
+		logger.Error().Err(err).Msgf("rror finding cart by id %s!", cartId)
+
+		return err
+	}
+
+	cart.Qty = qty
+
+	return r.db.GetDb().Save(&cart).Error
+}
+
+func (r *cartMysqlRepository) DeleteCartItem(cartId uint) error {
+
+	var cart entity.Cart
+
+	if err := r.db.GetDb().First(&cart, cartId).Error; err != nil {
+
+		logger.Error().Err(err).Msgf("rror finding cart by id %s!", cartId)
+
+		return err
+	}
+
+	return r.db.GetDb().Delete(&cart).Error
+}

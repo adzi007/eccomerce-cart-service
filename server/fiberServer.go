@@ -69,6 +69,9 @@ func (s *fiberServer) initializeCartServiceHttpHandler() {
 	// router
 	// s.app.Post("/cart", cartHandler.InsertNewCart)
 	s.app.Post("/cart", cartHandler.InsertCart)
-	s.app.Get("/", cartHandler.GetCustomerCart)
+	// s.app.Get("/", cartHandler.GetCustomerCart)
+	s.app.Get("/:userId", cartHandler.GetCartByCustomer)
+	s.app.Put("/", cartHandler.UpdateQty)
+	s.app.Delete("/:cartId", cartHandler.DeleteCartItem)
 
 }

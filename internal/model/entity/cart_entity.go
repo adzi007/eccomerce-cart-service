@@ -13,6 +13,11 @@ type InsertCartDto struct {
 	Qty       uint   `json:"qty" validate:"required"`
 }
 
+type UpdateCartQtyDto struct {
+	ID  uint `json:"cartId" validate:"required"`
+	Qty uint `json:"qty" validate:"required"`
+}
+
 type Cart struct {
 	ID        uint `gorm:"primaryKey"`
 	UserId    string

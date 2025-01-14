@@ -4,6 +4,7 @@ import (
 	"cart-service/internal/model/entity"
 	"cart-service/internal/usecase"
 	"cart-service/pkg/logger"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -101,4 +102,82 @@ func (h *cartHttpHandler) GetCustomerCart(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"pesan": "Test call another service",
 	})
+}
+
+func (h *cartHttpHandler) GetCartByCustomer(ctx *fiber.Ctx) error {
+
+	userId := ctx.Params("userId")
+
+	err, data := h.cartUsecase.GetCartByCustomer(userId)
+
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"pesan": "Failed to get cart",
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"pesan": "Test get products",
+		"data":  data,
+	})
+}
+
+func (h *cartHttpHandler) UpdateQty(ctx *fiber.Ctx) error {
+
+	reqBody := new(entity.UpdateCartQtyDto)
+
+	if err := ctx.BodyParser(reqBody); err != nil {
+		logger.Error().Err(err).Msg("Error binding request body")
+		return ctx.Status(400).JSON(fiber.Map{
+			"message": "failed",
+			"error":   err.Error(),
+		})
+	}
+
+	var validate = validator.New()
+
+	errValidate := validate.Struct(reqBody)
+
+	if errValidate != nil {
+		return ctx.Status(400).JSON(fiber.Map{
+			"message": "failed",
+			"error":   errValidate.Error(),
+		})
+	}
+
+	if err := h.cartUsecase.UpdateQty(reqBody.ID, reqBody.Qty); err != nil {
+
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"pesan": "failed to update item to cart",
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"pesan": "Success Update product",
+	})
+}
+
+func (h *cartHttpHandler) DeleteCartItem(ctx *fiber.Ctx) error {
+
+	cartId64, errConvert := strconv.ParseUint(ctx.Params("cartId"), 10, 32)
+
+	if errConvert != nil {
+
+		logger.Error().Err(errConvert)
+	}
+
+	cartId := uint(cartId64)
+
+	err := h.cartUsecase.DeleteCartItem(cartId)
+
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"pesan": "Failed to delete cart item",
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"pesan": "Success delete cart item",
+	})
+
 }

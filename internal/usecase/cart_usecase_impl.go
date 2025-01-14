@@ -113,3 +113,20 @@ func (c *CartUsecaseImpl) GetCustomerCart() error {
 
 	return nil
 }
+
+func (c *CartUsecaseImpl) GetCartByCustomer(userId string) (error, []entity.Cart) {
+
+	err, carts := c.cartRepo.GetCartByUser(userId)
+
+	return err, carts
+}
+
+func (c *CartUsecaseImpl) UpdateQty(cartId uint, qty uint) error {
+
+	return c.cartRepo.UpdateQty(cartId, qty)
+}
+
+func (c *CartUsecaseImpl) DeleteCartItem(cartId uint) error {
+
+	return c.cartRepo.DeleteCartItem(cartId)
+}
