@@ -40,6 +40,27 @@ func (c *CartUsecaseImpl) CreateNewCart(in *entity.InsertCartDto) error {
 	return nil
 }
 
+func (c *CartUsecaseImpl) InsertCart(in *entity.InsertCartDto) error {
+
+	insertCartdata := &entity.InsertCartDto{
+		UserId:    in.UserId,
+		ProductId: in.ProductId,
+		Price:     in.Price,
+		Qty:       in.Qty,
+	}
+
+	// fmt.Println("insertCartdata >>> ", insertCartdata)
+
+	if err := c.cartRepo.InsertCart(insertCartdata); err != nil {
+		logger.Error().Err(err).Msg("Failed insert item to cart")
+
+		return err
+	}
+
+	logger.Info().Msg("Success insert item to cart")
+	return nil
+}
+
 type ApiResponse struct {
 	ID          int      `json:"id"`
 	Name        string   `json:"name"`

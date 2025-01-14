@@ -67,7 +67,8 @@ func (s *fiberServer) initializeCartServiceHttpHandler() {
 	cartHandler := handler.NewCartHttpHandle(cartUsecase)
 
 	// router
-	s.app.Post("/cart", cartHandler.InsertNewCart)
+	// s.app.Post("/cart", cartHandler.InsertNewCart)
+	s.app.Post("/cart", cartHandler.InsertCart)
 	s.app.Get("/", cartHandler.GetCustomerCart)
 
 }

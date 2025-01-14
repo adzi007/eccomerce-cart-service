@@ -16,6 +16,12 @@ func main() {
 
 func appDbMigrate(db database.Database) {
 
-	db.GetDb().Migrator().CreateTable(&entity.Cart{})
+	// db.GetDb().Migrator().CreateTable(&entity.Cart{})
+
+	err := db.GetDb().Migrator().AutoMigrate(&entity.Cart{})
+
+	if err != nil {
+		panic("failed to migrate database: " + err.Error())
+	}
 
 }
