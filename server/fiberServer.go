@@ -5,7 +5,9 @@ import (
 	"cart-service/internal/handler"
 	"cart-service/internal/repository"
 	"cart-service/internal/usecase"
+	"cart-service/pkg/cachestore"
 	"cart-service/pkg/logger"
+	"context"
 	"log"
 
 	_ "cart-service/docs"
@@ -56,11 +58,15 @@ func (s *fiberServer) Start() {
 
 func (s *fiberServer) initializeCartServiceHttpHandler() {
 
+	ctx := context.Background()
+
+	redisRepo := cachestore.NewRedisCache(ctx, "localhost:6379", "", 0)
+
 	// repository
 	cartRepo := repository.NewCartRepository(s.db)
 
 	// use case
-	cartUsecase := usecase.NewCartUsecaseImpl(cartRepo)
+	cartUsecase := usecase.NewCartUsecaseImpl(cartRepo, redisRepo)
 
 	// handler
 

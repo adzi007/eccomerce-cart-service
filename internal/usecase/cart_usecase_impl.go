@@ -1,24 +1,30 @@
 package usecase
 
 import (
+	"bytes"
 	"cart-service/config"
+	"cart-service/internal/domain"
 	"cart-service/internal/model/entity"
 	"cart-service/internal/repository"
 	"cart-service/pkg/logger"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type CartUsecaseImpl struct {
 	cartRepo repository.CartRepository
+	cache    domain.CacheRepository
 }
 
-func NewCartUsecaseImpl(cartRepo repository.CartRepository) CartUsecase {
+func NewCartUsecaseImpl(cartRepo repository.CartRepository, cache domain.CacheRepository) CartUsecase {
 	return &CartUsecaseImpl{
 		cartRepo: cartRepo,
+		cache:    cache,
 	}
 }
 
@@ -34,6 +40,8 @@ func (c *CartUsecaseImpl) CreateNewCart(in *entity.InsertCartDto) error {
 
 		return err
 	}
+
+	// c.cache.
 
 	logger.Info().Msg("Success create a new cart 2")
 
@@ -88,11 +96,10 @@ type Todo struct {
 
 func (c *CartUsecaseImpl) GetCustomerCart() error {
 
-	fmt.Println("coba panggil api service lain", config.ENV.API_GATEWAY)
+	// url := config.ENV.API_GATEWAY + "/products/products/10"
 
-	url := config.ENV.API_GATEWAY + "/products/products/10"
+	request := fiber.Get(config.ENV.API_GATEWAY + "/products/products/10")
 
-	request := fiber.Get(url)
 	request.Debug()
 
 	_, data, err := request.Bytes()
@@ -114,9 +121,57 @@ func (c *CartUsecaseImpl) GetCustomerCart() error {
 	return nil
 }
 
+type CartProductReq struct {
+	productsList []uint
+}
+
 func (c *CartUsecaseImpl) GetCartByCustomer(userId string) (error, []entity.Cart) {
 
 	err, carts := c.cartRepo.GetCartByUser(userId)
+
+	var productIdsArr []uint
+
+	for _, val := range carts {
+		productIdsArr = append(productIdsArr, val.ProductId)
+	}
+
+	// cartProductReq := CartProductReq{
+	// 	productsList: productIdsArr,
+	// }
+
+	// fmt.Println("cartProductReq >>> ", cartProductReq.productsList)
+
+	data := map[string]interface{}{
+		"productsList": productIdsArr,
+	}
+
+	jsonCartProductReq, err := json.Marshal(data)
+	if err != nil {
+		fmt.Printf("Error encoding JSON: %v\n", err)
+	}
+
+	// fmt.Println("jsonCartProductReq >>>", jsonCartProductReq)
+
+	url := config.ENV.URL_PRODUCT_SERVICE + "/cart-product"
+
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonCartProductReq))
+	if err != nil {
+		fmt.Printf("Error making POST request: %v\n", err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Error reading response: %v\n", err)
+	}
+
+	fmt.Printf("Response Status: %s\n", resp.Status)
+	fmt.Printf("Response Body: %s\n", body)
+
+	// ---- get product info from product -service
+
+	//
 
 	return err, carts
 }

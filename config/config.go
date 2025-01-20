@@ -9,13 +9,14 @@ import (
 )
 
 type Config struct {
-	DB_HOST     string
-	DB_USERNAME string
-	DB_PASSWORD string
-	DB_PORT     string
-	DB_NAME     string
-	PORT_AP     string
-	API_GATEWAY string
+	DB_HOST             string
+	DB_USERNAME         string
+	DB_PASSWORD         string
+	DB_PORT             string
+	DB_NAME             string
+	PORT_AP             string
+	API_GATEWAY         string
+	URL_PRODUCT_SERVICE string
 }
 
 var (
