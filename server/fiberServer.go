@@ -4,6 +4,7 @@ import (
 	"cart-service/config/database"
 	"cart-service/internal/handler"
 	"cart-service/internal/repository"
+	productservicerepo "cart-service/internal/repository/product_service_repo"
 	"cart-service/internal/usecase"
 	"cart-service/pkg/cachestore"
 	"cart-service/pkg/logger"
@@ -65,8 +66,12 @@ func (s *fiberServer) initializeCartServiceHttpHandler() {
 	// repository
 	cartRepo := repository.NewCartRepository(s.db)
 
+	// product service repository
+
+	productServiceRepo := productservicerepo.NewProductServiceRepository()
+
 	// use case
-	cartUsecase := usecase.NewCartUsecaseImpl(cartRepo, redisRepo)
+	cartUsecase := usecase.NewCartUsecaseImpl(cartRepo, redisRepo, productServiceRepo)
 
 	// handler
 
@@ -79,5 +84,6 @@ func (s *fiberServer) initializeCartServiceHttpHandler() {
 	s.app.Get("/:userId", cartHandler.GetCartByCustomer)
 	s.app.Put("/", cartHandler.UpdateQty)
 	s.app.Delete("/:cartId", cartHandler.DeleteCartItem)
+	s.app.Get("/check/redis", cartHandler.Check)
 
 }

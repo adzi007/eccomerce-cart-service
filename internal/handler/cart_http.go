@@ -181,3 +181,13 @@ func (h *cartHttpHandler) DeleteCartItem(ctx *fiber.Ctx) error {
 	})
 
 }
+
+func (h *cartHttpHandler) Check(ctx *fiber.Ctx) error {
+
+	h.cartUsecase.Check()
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"pesan": "Check redis",
+	})
+
+}

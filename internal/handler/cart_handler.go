@@ -9,4 +9,5 @@ type CartHandler interface {
 	GetCartByCustomer(ctx *fiber.Ctx) error
 	UpdateQty(ctx *fiber.Ctx) error
 	DeleteCartItem(ctx *fiber.Ctx) error
+	Check(ctx *fiber.Ctx) error
 }

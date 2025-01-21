@@ -1,30 +1,32 @@
 package usecase
 
 import (
-	"bytes"
 	"cart-service/config"
 	"cart-service/internal/domain"
 	"cart-service/internal/model/entity"
 	"cart-service/internal/repository"
+	productservicerepo "cart-service/internal/repository/product_service_repo"
 	"cart-service/pkg/logger"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"net/http"
+	"strconv"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/k0kubun/pp/v3"
 )
 
 type CartUsecaseImpl struct {
-	cartRepo repository.CartRepository
-	cache    domain.CacheRepository
+	cartRepo       repository.CartRepository
+	cache          domain.CacheRepository
+	productService productservicerepo.ProductService
 }
 
-func NewCartUsecaseImpl(cartRepo repository.CartRepository, cache domain.CacheRepository) CartUsecase {
+func NewCartUsecaseImpl(cartRepo repository.CartRepository, cache domain.CacheRepository, productService productservicerepo.ProductService) CartUsecase {
 	return &CartUsecaseImpl{
-		cartRepo: cartRepo,
-		cache:    cache,
+		cartRepo:       cartRepo,
+		cache:          cache,
+		productService: productService,
 	}
 }
 
@@ -125,55 +127,61 @@ type CartProductReq struct {
 	productsList []uint
 }
 
-func (c *CartUsecaseImpl) GetCartByCustomer(userId string) (error, []entity.Cart) {
+func (c *CartUsecaseImpl) GetCartByCustomer(userId string) (error, []domain.ProductCart) {
 
+	// Get cart from internal repository
 	err, carts := c.cartRepo.GetCartByUser(userId)
+	if err != nil {
+		pp.Println("Error fetching carts:", err)
+		return err, nil
+	}
 
-	var productIdsArr []uint
-
+	var productKeys []string
 	for _, val := range carts {
-		productIdsArr = append(productIdsArr, val.ProductId)
+
+		productKeys = append(productKeys, strconv.FormatUint(uint64(val.ProductId), 10))
 	}
 
-	// cartProductReq := CartProductReq{
-	// 	productsList: productIdsArr,
-	// }
-
-	// fmt.Println("cartProductReq >>> ", cartProductReq.productsList)
-
-	data := map[string]interface{}{
-		"productsList": productIdsArr,
-	}
-
-	jsonCartProductReq, err := json.Marshal(data)
+	// Check and get product from redis, and get missing producta
+	productsFromCache, missingKeyProducts, err := c.cache.MGetProductsCache(productKeys, "product:")
 	if err != nil {
-		fmt.Printf("Error encoding JSON: %v\n", err)
+		pp.Println("err mget >>> ", err)
 	}
 
-	// fmt.Println("jsonCartProductReq >>>", jsonCartProductReq)
+	var productFromService []domain.ProductCart
 
-	url := config.ENV.URL_PRODUCT_SERVICE + "/cart-product"
+	if len(missingKeyProducts) > 0 {
 
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonCartProductReq))
-	if err != nil {
-		fmt.Printf("Error making POST request: %v\n", err)
+		productCart, err := c.productService.GetProductCart(missingKeyProducts)
+
+		if err != nil {
+			pp.Println("err >>", err)
+		}
+
+		productFromService = productCart
+
+		productsToCache := make(map[string]domain.ProductCart)
+
+		for _, rowProduct := range productCart {
+
+			// pp.Println(rowProduct)
+			productkey := strconv.FormatUint(uint64(rowProduct.ID), 10)
+			productsToCache["product:"+productkey] = rowProduct
+
+		}
+
+		if err := c.cache.MSetProductsCache(productsToCache, 60); err != nil {
+			pp.Println("err mset redis", err)
+		}
 	}
 
-	defer resp.Body.Close()
+	// pp.Println("productFromService >>>> ", productFromService)
+	// fmt.Println("---------------------------------------------------")
+	// pp.Println("productsFromCache >>>> ", productsFromCache)
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Printf("Error reading response: %v\n", err)
-	}
+	combinedProducts := append(productFromService, productsFromCache...)
 
-	fmt.Printf("Response Status: %s\n", resp.Status)
-	fmt.Printf("Response Body: %s\n", body)
-
-	// ---- get product info from product -service
-
-	//
-
-	return err, carts
+	return err, combinedProducts
 }
 
 func (c *CartUsecaseImpl) UpdateQty(cartId uint, qty uint) error {
@@ -184,4 +192,19 @@ func (c *CartUsecaseImpl) UpdateQty(cartId uint, qty uint) error {
 func (c *CartUsecaseImpl) DeleteCartItem(cartId uint) error {
 
 	return c.cartRepo.DeleteCartItem(cartId)
+}
+
+func (c *CartUsecaseImpl) Check() error {
+
+	pp.Print("test redissssss ==============>")
+
+	testRedis, err := c.cache.Get("product:5")
+
+	if err != nil {
+		pp.Print("error get redis ", err)
+	}
+
+	pp.Print("testRedis >>> ", testRedis)
+
+	return nil
 }
