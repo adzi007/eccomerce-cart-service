@@ -4,9 +4,7 @@ package cart;
 
 option go_package = "github.com/adzi007/eccomerce-cart-service/proto";
 
-service CoffeeShop {
-    // rpc GetMenu(MenuRequest) returns (stream Menu) {}
-    // rpc PlaceOrder(Order) returns (Receipt) {}
+service CartService {
     rpc GetCartUser(CartRequest) returns (CartResponse) {}
 }
 
@@ -29,17 +27,6 @@ message CartItem {
 }
 
 message ProductCategory {
-    name = 1;
-    slug = 2;
+    string name = 1;
+    string slug = 2;
 }
-
-
-// "id": 5,
-// "name": "sayur brokoli",
-// "slug": "indomie-kari-original-240g",
-// "price": 2200,
-// "stock": 14,
-// "category": {
-//     "name": "Sayuran",
-//     "slug": "sayuran"
-// }

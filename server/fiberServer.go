@@ -1,8 +1,10 @@
 package server
 
 import (
+	pb "cart-service/cart_proto"
 	"cart-service/config/database"
 	"cart-service/internal/handler"
+	localGrpc "cart-service/internal/handler/grpc"
 	"cart-service/internal/repository"
 	productservicerepo "cart-service/internal/repository/product_service_repo"
 	"cart-service/internal/usecase"
@@ -10,6 +12,9 @@ import (
 	"cart-service/pkg/logger"
 	"context"
 	"log"
+	"net"
+
+	"google.golang.org/grpc"
 
 	_ "cart-service/docs"
 
@@ -76,6 +81,19 @@ func (s *fiberServer) initializeCartServiceHttpHandler() {
 	// handler
 
 	cartHandler := handler.NewCartHttpHandle(cartUsecase)
+
+	lis, err := net.Listen("tcp", ":9001")
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+
+	grpcServer := grpc.NewServer()
+
+	pb.RegisterCartServiceServer(grpcServer, &localGrpc.CartGrpcHandler{})
+
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %s", err)
+	}
 
 	// router
 	// s.app.Post("/cart", cartHandler.InsertNewCart)
