@@ -4,6 +4,7 @@ import (
 	pb "cart-service/cart_proto"
 	"cart-service/internal/usecase"
 	"context"
+	"fmt"
 )
 
 type CartGrpcHandler struct {
@@ -16,6 +17,8 @@ func NewCartGrpcHandler(usecase usecase.CartUsecase) CartGrpc {
 }
 
 func (h *CartGrpcHandler) GetCartUser(ctx context.Context, req *pb.CartRequest) (*pb.CartResponse, error) {
+
+	fmt.Println("req >>>> ", req)
 
 	dummyData := []*pb.CartItem{
 		{
