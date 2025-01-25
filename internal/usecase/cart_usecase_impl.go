@@ -175,10 +175,6 @@ func (c *CartUsecaseImpl) GetCartByCustomer(userId string) (error, []domain.Prod
 		}
 	}
 
-	// pp.Println("productFromService >>>> ", productFromService)
-	// fmt.Println("---------------------------------------------------")
-	// pp.Println("productsFromCache >>>> ", productsFromCache)
-
 	combinedProducts := append(productFromService, productsFromCache...)
 
 	return err, combinedProducts

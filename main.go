@@ -5,6 +5,11 @@ import (
 	"cart-service/config/database"
 	"cart-service/pkg/logger"
 	"cart-service/server"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/gofiber/contrib/fiberzerolog"
 )
@@ -28,8 +33,21 @@ func main() {
 		Logger: &mylog,
 	}))
 
-	servernya.Start()
+	grpcServer := server.NewGrpcServer(db)
 
-	// logger.Error().Err(err).Msg("This is an error message")
+	go grpcServer.StartGRPCServer()
+
+	go servernya.Start()
+
+	// Graceful shutdown handling
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Println("Shutting down servers...")
+
+	// Perform any cleanup if needed
+	time.Sleep(1 * time.Second)
+	log.Println("Servers stopped.")
 
 }

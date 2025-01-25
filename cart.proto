@@ -22,7 +22,7 @@ message CartItem {
     string name = 2;
     string slug = 3;
     uint64 price = 4;
-    string stock = 5;
+    uint64 stock = 5;
     ProductCategory category = 6;
 }
 

@@ -1,4 +1,4 @@
-package grpc
+package grpchandler
 
 import (
 	proto "cart-service/cart_proto"
