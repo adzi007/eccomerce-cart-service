@@ -9,7 +9,7 @@ type CartUsecase interface {
 	InsertCart(in *entity.InsertCartDto) error
 	CreateNewCart(in *entity.InsertCartDto) error
 	GetCustomerCart() error
-	GetCartByCustomer(userId string) ([]domain.ProductServiceResponse, error)
+	GetCartByCustomer(userId string) ([]domain.ProductCart, error)
 	UpdateQty(cartId uint, qty uint) error
 	DeleteCartItem(artId uint) error
 	Check() error

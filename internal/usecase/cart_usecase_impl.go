@@ -127,7 +127,7 @@ func (c *CartUsecaseImpl) GetCustomerCart() error {
 // 	productsList []uint
 // }
 
-func (c *CartUsecaseImpl) GetCartByCustomer(userId string) ([]domain.ProductServiceResponse, error) {
+func (c *CartUsecaseImpl) GetCartByCustomer(userId string) ([]domain.ProductCart, error) {
 
 	// Get cart from internal repository
 	err, carts := c.cartRepo.GetCartByUser(userId)
@@ -197,19 +197,29 @@ func (c *CartUsecaseImpl) GetCartByCustomer(userId string) ([]domain.ProductServ
 
 	combinedProducts := append(productFromService, productsFromCache...)
 
-	// var combinedProductsRelation []domain.ProductCart
+	var combinedProductsRelation []domain.ProductCart
 
-	for i, val := range combinedProducts {
+	for _, val := range combinedProducts {
 
-		combinedProducts[i].Qty = int(productIdsQty[uint(val.ID)])
+		// combinedProducts[i].Qty = int(productIdsQty[uint(val.ID)])
 
-		// item := domain.ProductCart
+		item := domain.ProductCart{
+			ID:        productCartRelation[uint(val.ID)],
+			ProductId: val.ID,
+			Name:      val.Name,
+			Slug:      val.Slug,
+			Price:     val.Price,
+			Qty:       int(productIdsQty[uint(val.ID)]),
+			Category:  val.Category,
+		}
+
+		combinedProductsRelation = append(combinedProductsRelation, item)
 
 	}
 
 	// pp.Println("combinedProducts >>> ", combinedProducts)
 
-	return combinedProducts, nil
+	return combinedProductsRelation, nil
 }
 
 func (c *CartUsecaseImpl) UpdateQty(cartId uint, qty uint) error {

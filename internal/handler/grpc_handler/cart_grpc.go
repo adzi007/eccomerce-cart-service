@@ -24,8 +24,6 @@ func (h *CartGrpcHandler) GetCartUser(ctx context.Context, req *pb.CartRequest) 
 		return nil, fmt.Errorf("invalid request")
 	}
 
-	fmt.Println("req >>>> ", req)
-
 	if h.cartUsecase == nil {
 		logger.Error().Msg("CartUsecase is not initialized")
 		return nil, fmt.Errorf("internal server error")
@@ -49,7 +47,7 @@ func (h *CartGrpcHandler) GetCartUser(ctx context.Context, req *pb.CartRequest) 
 			Name:  v.Name,
 			Slug:  v.Slug,
 			Price: uint64(v.Price),
-			Stock: uint64(v.Stock),
+			Qty:   uint64(v.Qty),
 			Category: &pb.ProductCategory{
 				Name: v.Category.Name,
 				Slug: v.Category.Slug,

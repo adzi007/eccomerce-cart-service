@@ -6,7 +6,6 @@ type ProductServiceResponse struct {
 	Slug     string `json:"slug"`
 	Price    int    `json:"price"`
 	Stock    int    `json:"stock"`
-	Qty      int    `json:"qty"`
 	Category struct {
 		Name string `json:"name"`
 		Slug string `json:"slug"`
@@ -14,7 +13,7 @@ type ProductServiceResponse struct {
 }
 
 type ProductCart struct {
-	ID        int    `json:"id"`
+	ID        uint   `json:"id"`
 	ProductId int    `json:"product_id"`
 	Name      string `json:"name"`
 	Slug      string `json:"slug"`
