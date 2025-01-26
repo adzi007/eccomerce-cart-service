@@ -18,9 +18,9 @@ type ProductCart struct {
 	Name      string `json:"name"`
 	Slug      string `json:"slug"`
 	Price     int    `json:"price"`
-	Stock     int    `json:"stock"`
-	Qty       int    `json:"qty"`
-	Category  struct {
+	// Stock     int    `json:"stock"`
+	Qty      int `json:"qty"`
+	Category struct {
 		Name string `json:"name"`
 		Slug string `json:"slug"`
 	} `json:"category"`
