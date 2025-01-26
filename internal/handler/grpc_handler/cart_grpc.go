@@ -31,7 +31,7 @@ func (h *CartGrpcHandler) GetCartUser(ctx context.Context, req *pb.CartRequest) 
 		return nil, fmt.Errorf("internal server error")
 	}
 
-	err, data := h.cartUsecase.GetCartByCustomer(req.Id)
+	data, err := h.cartUsecase.GetCartByCustomer(req.Id)
 
 	if err != nil {
 

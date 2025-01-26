@@ -123,32 +123,44 @@ func (c *CartUsecaseImpl) GetCustomerCart() error {
 	return nil
 }
 
-type CartProductReq struct {
-	productsList []uint
-}
+// type CartProductReq struct {
+// 	productsList []uint
+// }
 
-func (c *CartUsecaseImpl) GetCartByCustomer(userId string) (error, []domain.ProductCart) {
+func (c *CartUsecaseImpl) GetCartByCustomer(userId string) ([]domain.ProductServiceResponse, error) {
 
 	// Get cart from internal repository
 	err, carts := c.cartRepo.GetCartByUser(userId)
 	if err != nil {
 		pp.Println("Error fetching carts:", err)
-		return err, nil
+		return nil, err
 	}
 
+	// pp.Println("carts >>> ", carts)
+
 	var productKeys []string
+	productIdsQty := make(map[uint]uint)
+
+	productCartRelation := make(map[uint]uint)
+
 	for _, val := range carts {
 
 		productKeys = append(productKeys, strconv.FormatUint(uint64(val.ProductId), 10))
+
+		productIdsQty[val.ProductId] = val.Qty
+		productCartRelation[val.ProductId] = val.ID
 	}
 
 	// Check and get product from redis, and get missing producta
 	productsFromCache, missingKeyProducts, err := c.cache.MGetProductsCache(productKeys, "product:")
 	if err != nil {
 		pp.Println("err mget >>> ", err)
+
+		return nil, err
 	}
 
-	var productFromService []domain.ProductCart
+	// var productFromService []domain.ProductCart
+	var productFromService []domain.ProductServiceResponse
 
 	if len(missingKeyProducts) > 0 {
 
@@ -156,28 +168,48 @@ func (c *CartUsecaseImpl) GetCartByCustomer(userId string) (error, []domain.Prod
 
 		if err != nil {
 			pp.Println("err >>", err)
+
+			return nil, err
 		}
 
 		productFromService = productCart
 
-		productsToCache := make(map[string]domain.ProductCart)
+		productsToCache := make(map[string]domain.ProductServiceResponse)
+
+		pp.Println("productIdsQty >>> ", productIdsQty)
 
 		for _, rowProduct := range productCart {
 
 			// pp.Println(rowProduct)
 			productkey := strconv.FormatUint(uint64(rowProduct.ID), 10)
+
+			// fmt.Println("the qty ", rowProduct.ID, " : ", productIdsQty[uint(rowProduct.ID)])
+
 			productsToCache["product:"+productkey] = rowProduct
 
 		}
 
 		if err := c.cache.MSetProductsCache(productsToCache, 60); err != nil {
 			pp.Println("err mset redis", err)
+			return nil, err
 		}
 	}
 
 	combinedProducts := append(productFromService, productsFromCache...)
 
-	return err, combinedProducts
+	// var combinedProductsRelation []domain.ProductCart
+
+	for i, val := range combinedProducts {
+
+		combinedProducts[i].Qty = int(productIdsQty[uint(val.ID)])
+
+		// item := domain.ProductCart
+
+	}
+
+	// pp.Println("combinedProducts >>> ", combinedProducts)
+
+	return combinedProducts, nil
 }
 
 func (c *CartUsecaseImpl) UpdateQty(cartId uint, qty uint) error {

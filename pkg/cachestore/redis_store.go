@@ -47,7 +47,7 @@ func (r *redisCache) Delete(key string) error {
 }
 
 // MSetStructs stores multiple ProductCart structs in Redis
-func (r *redisCache) MSetProductsCache(data map[string]domain.ProductCart, expiration int64) error {
+func (r *redisCache) MSetProductsCache(data map[string]domain.ProductServiceResponse, expiration int64) error {
 	// Prepare a flat map for MSET
 	flatData := make(map[string]string)
 	for key, product := range data {
@@ -77,7 +77,7 @@ func (r *redisCache) MSetProductsCache(data map[string]domain.ProductCart, expir
 }
 
 // MGetStructs retrieves multiple ProductCart structs from Redis
-func (r *redisCache) MGetProductsCache(keys []string, keyPrefix string) ([]domain.ProductCart, []uint, error) {
+func (r *redisCache) MGetProductsCache(keys []string, keyPrefix string) ([]domain.ProductServiceResponse, []uint, error) {
 
 	prefixedKeys := make([]string, len(keys))
 	for i, key := range keys {
@@ -93,7 +93,7 @@ func (r *redisCache) MGetProductsCache(keys []string, keyPrefix string) ([]domai
 	}
 
 	// Prepare the result map
-	var result []domain.ProductCart
+	var result []domain.ProductServiceResponse
 	var missingKeyProducts []uint
 
 	// Iterate through the keys and deserialize values
@@ -119,7 +119,7 @@ func (r *redisCache) MGetProductsCache(keys []string, keyPrefix string) ([]domai
 		}
 
 		// Deserialize JSON to ProductCart struct
-		var product domain.ProductCart
+		var product domain.ProductServiceResponse
 		err := json.Unmarshal([]byte(strValue), &product)
 		if err != nil {
 			pp.Println("Error unmarshaling JSON for key:", key, "Error:", err)

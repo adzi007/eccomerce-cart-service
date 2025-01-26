@@ -16,7 +16,7 @@ func NewProductServiceRepository() ProductService {
 	return &productServiceRepository{}
 }
 
-func (r *productServiceRepository) GetProductCart(productIds []uint) ([]domain.ProductCart, error) {
+func (r *productServiceRepository) GetProductCart(productIds []uint) ([]domain.ProductServiceResponse, error) {
 
 	data := map[string]interface{}{
 		"productsList": productIds,
@@ -44,7 +44,7 @@ func (r *productServiceRepository) GetProductCart(productIds []uint) ([]domain.P
 		return nil, err
 	}
 
-	var productCarts []domain.ProductCart
+	var productCarts []domain.ProductServiceResponse
 
 	err = json.Unmarshal(body, &productCarts)
 	if err != nil {

@@ -108,7 +108,7 @@ func (h *cartHttpHandler) GetCartByCustomer(ctx *fiber.Ctx) error {
 
 	userId := ctx.Params("userId")
 
-	err, data := h.cartUsecase.GetCartByCustomer(userId)
+	data, err := h.cartUsecase.GetCartByCustomer(userId)
 
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

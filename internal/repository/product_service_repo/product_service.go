@@ -15,5 +15,5 @@ import "cart-service/internal/domain"
 // }
 
 type ProductService interface {
-	GetProductCart(productIds []uint) ([]domain.ProductCart, error)
+	GetProductCart(productIds []uint) ([]domain.ProductServiceResponse, error)
 }
