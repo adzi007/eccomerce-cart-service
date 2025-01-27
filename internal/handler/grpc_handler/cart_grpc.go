@@ -31,6 +31,8 @@ func (h *CartGrpcHandler) GetCartUser(ctx context.Context, req *pb.CartRequest) 
 
 	data, err := h.cartUsecase.GetCartByCustomer(req.Id)
 
+	// pp.Println("data >>> ", data)
+
 	if err != nil {
 
 		logger.Error().Err(err).Msg("Failed to get cart user by ID")
@@ -43,11 +45,12 @@ func (h *CartGrpcHandler) GetCartUser(ctx context.Context, req *pb.CartRequest) 
 	for _, v := range data {
 
 		cartItem := &pb.CartItem{
-			Id:    uint64(v.ID),
-			Name:  v.Name,
-			Slug:  v.Slug,
-			Price: uint64(v.Price),
-			Qty:   uint64(v.Qty),
+			Id:        uint64(v.ID),
+			ProductId: uint64(v.ProductId),
+			Name:      v.Name,
+			Slug:      v.Slug,
+			Price:     uint64(v.Price),
+			Qty:       uint64(v.Qty),
 			Category: &pb.ProductCategory{
 				Name: v.Category.Name,
 				Slug: v.Category.Slug,

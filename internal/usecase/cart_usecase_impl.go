@@ -176,7 +176,7 @@ func (c *CartUsecaseImpl) GetCartByCustomer(userId string) ([]domain.ProductCart
 
 		productsToCache := make(map[string]domain.ProductServiceResponse)
 
-		pp.Println("productIdsQty >>> ", productIdsQty)
+		// pp.Println("productIdsQty >>> ", productIdsQty)
 
 		for _, rowProduct := range productCart {
 
