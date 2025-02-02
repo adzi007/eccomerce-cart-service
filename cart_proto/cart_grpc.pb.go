@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CartServiceClient interface {
 	GetCartUser(ctx context.Context, in *CartRequest, opts ...grpc.CallOption) (*CartResponse, error)
+	DeleteCartUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*DeleteCartResponse, error)
 }
 
 type cartServiceClient struct {
@@ -38,11 +39,21 @@ func (c *cartServiceClient) GetCartUser(ctx context.Context, in *CartRequest, op
 	return out, nil
 }
 
+func (c *cartServiceClient) DeleteCartUser(ctx context.Context, in *UserRequest, opts ...grpc.CallOption) (*DeleteCartResponse, error) {
+	out := new(DeleteCartResponse)
+	err := c.cc.Invoke(ctx, "/cart.CartService/DeleteCartUser", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CartServiceServer is the server API for CartService service.
 // All implementations must embed UnimplementedCartServiceServer
 // for forward compatibility
 type CartServiceServer interface {
 	GetCartUser(context.Context, *CartRequest) (*CartResponse, error)
+	DeleteCartUser(context.Context, *UserRequest) (*DeleteCartResponse, error)
 	mustEmbedUnimplementedCartServiceServer()
 }
 
@@ -52,6 +63,9 @@ type UnimplementedCartServiceServer struct {
 
 func (UnimplementedCartServiceServer) GetCartUser(context.Context, *CartRequest) (*CartResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetCartUser not implemented")
+}
+func (UnimplementedCartServiceServer) DeleteCartUser(context.Context, *UserRequest) (*DeleteCartResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCartUser not implemented")
 }
 func (UnimplementedCartServiceServer) mustEmbedUnimplementedCartServiceServer() {}
 
@@ -84,6 +98,24 @@ func _CartService_GetCartUser_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CartService_DeleteCartUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CartServiceServer).DeleteCartUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/cart.CartService/DeleteCartUser",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CartServiceServer).DeleteCartUser(ctx, req.(*UserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CartService_ServiceDesc is the grpc.ServiceDesc for CartService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -94,6 +126,10 @@ var CartService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetCartUser",
 			Handler:    _CartService_GetCartUser_Handler,
+		},
+		{
+			MethodName: "DeleteCartUser",
+			Handler:    _CartService_DeleteCartUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

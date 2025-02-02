@@ -6,11 +6,16 @@ option go_package = "github.com/adzi007/eccomerce-cart-service/proto";
 
 service CartService {
     rpc GetCartUser(CartRequest) returns (CartResponse) {}
+    rpc DeleteCartUser(UserRequest) returns (DeleteCartResponse) {}
 }
 
 
 message CartRequest {
     string id = 1;
+}
+
+message UserRequest {
+    string userId = 1;
 }
 
 message CartResponse {
@@ -30,4 +35,8 @@ message CartItem {
 message ProductCategory {
     string name = 1;
     string slug = 2;
+}
+
+message DeleteCartResponse {
+    string message = 1;
 }

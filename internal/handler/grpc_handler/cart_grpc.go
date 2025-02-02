@@ -66,3 +66,34 @@ func (h *CartGrpcHandler) GetCartUser(ctx context.Context, req *pb.CartRequest) 
 	}, nil
 
 }
+
+func (h *CartGrpcHandler) DeleteCartUser(ctx context.Context, req *pb.UserRequest) (*pb.DeleteCartResponse, error) {
+
+	if req == nil {
+		logger.Error().Msg("Request is nil")
+		return nil, fmt.Errorf("invalid request")
+	}
+
+	if h.cartUsecase == nil {
+		logger.Error().Msg("CartUsecase is not initialized")
+		return nil, fmt.Errorf("internal server error")
+	}
+
+	err := h.cartUsecase.DeleteCartByUser(req.UserId)
+
+	if err != nil {
+
+		logger.Error().Err(err).Msg("Failed to get cart user by ID " + req.UserId)
+
+		// return nil, err
+
+		return &pb.DeleteCartResponse{
+			Message: "Failed delete cart by user " + req.UserId,
+		}, err
+	}
+
+	return &pb.DeleteCartResponse{
+		Message: "Succes delete cart",
+	}, nil
+
+}

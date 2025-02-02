@@ -12,5 +12,6 @@ type CartUsecase interface {
 	GetCartByCustomer(userId string) ([]domain.ProductCart, error)
 	UpdateQty(cartId uint, qty uint) error
 	DeleteCartItem(artId uint) error
+	DeleteCartByUser(userId string) error
 	Check() error
 }

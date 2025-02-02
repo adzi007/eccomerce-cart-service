@@ -93,3 +93,16 @@ func (r *cartMysqlRepository) DeleteCartItem(cartId uint) error {
 
 	return r.db.GetDb().Delete(&cart).Error
 }
+
+func (r *cartMysqlRepository) DeleteCartByUser(userId string) error {
+
+	var carts entity.Cart
+
+	filter := entity.Cart{
+		UserId: userId,
+	}
+
+	err := r.db.GetDb().Where(&filter).Delete(&carts)
+
+	return err.Error
+}

@@ -123,10 +123,6 @@ func (c *CartUsecaseImpl) GetCustomerCart() error {
 	return nil
 }
 
-// type CartProductReq struct {
-// 	productsList []uint
-// }
-
 func (c *CartUsecaseImpl) GetCartByCustomer(userId string) ([]domain.ProductCart, error) {
 
 	// Get cart from internal repository
@@ -136,7 +132,9 @@ func (c *CartUsecaseImpl) GetCartByCustomer(userId string) ([]domain.ProductCart
 		return nil, err
 	}
 
-	// pp.Println("carts >>> ", carts)
+	if len(carts) == 0 {
+		return []domain.ProductCart{}, nil
+	}
 
 	var productKeys []string
 	productIdsQty := make(map[uint]uint)
@@ -159,7 +157,6 @@ func (c *CartUsecaseImpl) GetCartByCustomer(userId string) ([]domain.ProductCart
 		return nil, err
 	}
 
-	// var productFromService []domain.ProductCart
 	var productFromService []domain.ProductServiceResponse
 
 	if len(missingKeyProducts) > 0 {
@@ -176,15 +173,9 @@ func (c *CartUsecaseImpl) GetCartByCustomer(userId string) ([]domain.ProductCart
 
 		productsToCache := make(map[string]domain.ProductServiceResponse)
 
-		// pp.Println("productIdsQty >>> ", productIdsQty)
-
 		for _, rowProduct := range productCart {
 
-			// pp.Println(rowProduct)
 			productkey := strconv.FormatUint(uint64(rowProduct.ID), 10)
-
-			// fmt.Println("the qty ", rowProduct.ID, " : ", productIdsQty[uint(rowProduct.ID)])
-
 			productsToCache["product:"+productkey] = rowProduct
 
 		}
@@ -201,8 +192,6 @@ func (c *CartUsecaseImpl) GetCartByCustomer(userId string) ([]domain.ProductCart
 
 	for _, val := range combinedProducts {
 
-		// combinedProducts[i].Qty = int(productIdsQty[uint(val.ID)])
-
 		item := domain.ProductCart{
 			ID:        productCartRelation[uint(val.ID)],
 			ProductId: val.ID,
@@ -217,8 +206,6 @@ func (c *CartUsecaseImpl) GetCartByCustomer(userId string) ([]domain.ProductCart
 
 	}
 
-	// pp.Println("combinedProducts >>> ", combinedProducts)
-
 	return combinedProductsRelation, nil
 }
 
@@ -230,6 +217,11 @@ func (c *CartUsecaseImpl) UpdateQty(cartId uint, qty uint) error {
 func (c *CartUsecaseImpl) DeleteCartItem(cartId uint) error {
 
 	return c.cartRepo.DeleteCartItem(cartId)
+}
+
+func (c *CartUsecaseImpl) DeleteCartByUser(userId string) error {
+
+	return c.cartRepo.DeleteCartByUser(userId)
 }
 
 func (c *CartUsecaseImpl) Check() error {

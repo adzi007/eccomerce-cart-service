@@ -2,8 +2,6 @@ package entity
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type InsertCartDto struct {
@@ -26,7 +24,7 @@ type Cart struct {
 	Qty       uint
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
+	// DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
 // type CartItems struct {

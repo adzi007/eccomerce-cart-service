@@ -8,4 +8,5 @@ type CartRepository interface {
 	GetCartByUser(userId string) (error, []entity.Cart)
 	UpdateQty(cartId uint, qty uint) error
 	DeleteCartItem(artId uint) error
+	DeleteCartByUser(userId string) error
 }
