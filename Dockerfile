@@ -9,12 +9,17 @@ COPY . .
 # Build the Go application
 RUN go build -o main .
 
+# Build migration binary too
+RUN go build -o migrate internal/migration/app_db_migration.go
+
 # Create a new stage for the final image
 FROM alpine:latest
 
 # Copy the built binary from the builder stage
 COPY --from=builder /app/main /
 # Copy the .env file into the root directory of the final image
+COPY --from=builder /app/migrate /migrate
+
 COPY --from=builder /app/.env /
 
 # Set the command to run the binary
