@@ -61,7 +61,15 @@ func (s *fiberServer) initializeCartServiceHttpHandler() {
 
 	ctx := context.Background()
 
-	redisRepo := cachestore.NewRedisCache(ctx, "localhost:6379", "", 0)
+	// redisHost := config.ENV.REDIS_HOST
+	// redisPort := config.ENV.REDIS_PORT
+
+	// connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=Local", dbUsername, dbPassword, dbHost, dbPort, dbName)
+
+	// redisConnection := fmt.Sprintf("%s:%s", redisHost, redisPort)
+
+	redisRepo := cachestore.NewRedisCache(ctx, "ecommerce-redis:6379", "", 0)
+	// redisRepo := cachestore.NewRedisCache(ctx, redisConnection, "", 0)
 
 	// repository
 	cartRepo := repository.NewCartRepository(s.db)

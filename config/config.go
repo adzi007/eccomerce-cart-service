@@ -17,6 +17,8 @@ type Config struct {
 	PORT_AP             string
 	API_GATEWAY         string
 	URL_PRODUCT_SERVICE string
+	REDIS_HOST          string
+	REDIS_PORT          string
 }
 
 var (
