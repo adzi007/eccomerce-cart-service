@@ -1,6 +1,7 @@
 package server
 
 import (
+	"cart-service/config"
 	"cart-service/config/database"
 	"cart-service/internal/handler"
 	"cart-service/internal/repository"
@@ -9,6 +10,7 @@ import (
 	"cart-service/pkg/cachestore"
 	"cart-service/pkg/logger"
 	"context"
+	"fmt"
 	"log"
 
 	_ "cart-service/docs"
@@ -61,15 +63,15 @@ func (s *fiberServer) initializeCartServiceHttpHandler() {
 
 	ctx := context.Background()
 
-	// redisHost := config.ENV.REDIS_HOST
-	// redisPort := config.ENV.REDIS_PORT
+	redisHost := config.ENV.REDIS_HOST
+	redisPort := config.ENV.REDIS_PORT
 
 	// connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=Local", dbUsername, dbPassword, dbHost, dbPort, dbName)
 
-	// redisConnection := fmt.Sprintf("%s:%s", redisHost, redisPort)
+	redisConnection := fmt.Sprintf("%s:%s", redisHost, redisPort)
 
-	redisRepo := cachestore.NewRedisCache(ctx, "ecommerce-redis:6379", "", 0)
-	// redisRepo := cachestore.NewRedisCache(ctx, redisConnection, "", 0)
+	// redisRepo := cachestore.NewRedisCache(ctx, "ecommerce-redis:6379", "", 0)
+	redisRepo := cachestore.NewRedisCache(ctx, redisConnection, "", 0)
 
 	// repository
 	cartRepo := repository.NewCartRepository(s.db)

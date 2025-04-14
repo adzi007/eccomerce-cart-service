@@ -2,6 +2,7 @@ package server
 
 import (
 	pb "cart-service/cart_proto"
+	"cart-service/config"
 	"cart-service/config/database"
 	grpchandler "cart-service/internal/handler/grpc_handler"
 	"cart-service/internal/repository"
@@ -9,6 +10,7 @@ import (
 	"cart-service/internal/usecase"
 	"cart-service/pkg/cachestore"
 	"context"
+	"fmt"
 	"log"
 	"net"
 
@@ -37,7 +39,15 @@ func (s *grpcServer) StartGRPCServer() {
 
 	ctx := context.Background()
 
-	redisRepo := cachestore.NewRedisCache(ctx, "localhost:6379", "", 0)
+	// redisRepo := cachestore.NewRedisCache(ctx, "localhost:6379", "", 0)
+
+	redisHost := config.ENV.REDIS_HOST
+	redisPort := config.ENV.REDIS_PORT
+
+	redisConnection := fmt.Sprintf("%s:%s", redisHost, redisPort)
+
+	// redisRepo := cachestore.NewRedisCache(ctx, "ecommerce-redis:6379", "", 0)
+	redisRepo := cachestore.NewRedisCache(ctx, redisConnection, "", 0)
 
 	// repository
 	cartRepo := repository.NewCartRepository(s.db)

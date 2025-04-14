@@ -29,8 +29,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      redis:
-        condition: service_healthy
+      # redis:
+      #   condition: service_healthy
     ports:
       - "5000:5000"
       - "9001:9001"
@@ -42,26 +42,27 @@ services:
       - DB_NAME=${DB_NAME}
     env_file:
       - .env
-  
-  redis:
-    image: redis:7
-    container_name: ecommerce-cart-redis
-    networks:
-      - ecommerce-network
-    ports:
-      - '${REDIS_PORT}:${REDIS_PORT}'
-    volumes:
-      - ./redis.conf:/usr/local/etc/redis/redis.conf
-      - redis_data:/data
-    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
-    restart: always
-    env_file:
-      - .env
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+
+  # redis:
+  #   image: redis:7
+  #   container_name: ecommerce-cart-redis
+  #   networks:
+  #     - ecommerce-network
+  #   ports:
+  #     - "6380:6379"
+  #     # - "${REDIS_PORT}:${REDIS_PORT}"
+  #   volumes:
+  #     - ./redis.conf:/usr/local/etc/redis/redis.conf
+  #     - redis_data:/data
+  #   command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+  #   restart: always
+  #   env_file:
+  #     - .env
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
 networks:
   ecommerce-network:
@@ -69,4 +70,4 @@ networks:
 
 volumes:
   db_data:
-  redis_data:
+  # redis_data:
