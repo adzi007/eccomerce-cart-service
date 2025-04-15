@@ -71,7 +71,7 @@ A microservice responsible for managing user cart data in an e-commerce system. 
 
 1. Clone the project
 ```bash
-git https://github.com/adzi007/eccomerce-cart-service.git
+git clone https://github.com/adzi007/eccomerce-cart-service.git
 cd ecommerce-cart-service
 ```
 2. CD into the ecommerce-cart-service directory and create an .env file or edit from .env.example following with fields bellow
