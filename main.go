@@ -34,15 +34,11 @@ func main() {
 		Logger: &mylog,
 	}))
 
-	// Use Prometheus middleware
-	servernya.Use(monitoring.Middleware())
-
-	// Register metrics
+	// Register Prometheus metrics
 	monitoring.RegisterMetrics()
 
-	// Prometheus metrics endpoint using adaptor
-	prometheus := fiberprometheus.New("my-service")
-	prometheus.RegisterAt(app, "/metrics")
+	// Add middleware
+	servernya.Use(monitoring.PrometheusMiddleware())
 
 	grpcServer := server.NewGrpcServer(db)
 

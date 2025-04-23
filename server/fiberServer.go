@@ -9,6 +9,7 @@ import (
 	"cart-service/internal/usecase"
 	"cart-service/pkg/cachestore"
 	"cart-service/pkg/logger"
+	"cart-service/pkg/monitoring"
 	"context"
 	"fmt"
 	"log"
@@ -106,6 +107,9 @@ func (s *fiberServer) initializeCartServiceHttpHandler() {
 	// 	promhttp.Handler().ServeHTTP(c.Context().ResponseWriter(), c.Context().Request())
 	// 	return nil
 	// })
+
+	// Add metrics route
+	s.app.Get("/metrics", monitoring.MetricsHandler())
 
 	// s.app.Post("/cart", cartHandler.InsertNewCart)
 	s.app.Post("/cart", cartHandler.InsertCart)
