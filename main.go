@@ -4,6 +4,7 @@ import (
 	"cart-service/config"
 	"cart-service/config/database"
 	"cart-service/pkg/logger"
+	"cart-service/pkg/monitoring"
 	"cart-service/server"
 	"log"
 	"os"
@@ -32,6 +33,16 @@ func main() {
 	servernya.Use(fiberzerolog.New(fiberzerolog.Config{
 		Logger: &mylog,
 	}))
+
+	// Use Prometheus middleware
+	servernya.Use(monitoring.Middleware())
+
+	// Register metrics
+	monitoring.RegisterMetrics()
+
+	// Prometheus metrics endpoint using adaptor
+	prometheus := fiberprometheus.New("my-service")
+	prometheus.RegisterAt(app, "/metrics")
 
 	grpcServer := server.NewGrpcServer(db)
 

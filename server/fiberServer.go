@@ -101,6 +101,12 @@ func (s *fiberServer) initializeCartServiceHttpHandler() {
 	// }
 
 	// router
+
+	// s.app.Get("/metrics", func(c *fiber.Ctx) error {
+	// 	promhttp.Handler().ServeHTTP(c.Context().ResponseWriter(), c.Context().Request())
+	// 	return nil
+	// })
+
 	// s.app.Post("/cart", cartHandler.InsertNewCart)
 	s.app.Post("/cart", cartHandler.InsertCart)
 	// s.app.Get("/", cartHandler.GetCustomerCart)
