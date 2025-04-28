@@ -9,6 +9,7 @@ import (
 )
 
 type Config struct {
+	DB_DRIVER           string
 	DB_HOST             string
 	DB_USERNAME         string
 	DB_PASSWORD         string
