@@ -6,6 +6,7 @@ import (
 	"cart-service/pkg/logger"
 	"cart-service/pkg/monitoring"
 	"cart-service/server"
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -28,6 +29,8 @@ func main() {
 
 	// db := database.NewMysqlDatabase()
 	var db database.Database
+
+	fmt.Println("DB_DRIVER >>>>> ", config.ENV.DB_DRIVER)
 
 	if config.ENV.DB_DRIVER == "sqlite" {
 		db = database.NewSqliteDatabase()

@@ -15,7 +15,7 @@ type Config struct {
 	DB_PASSWORD         string
 	DB_PORT             string
 	DB_NAME             string
-	PORT_AP             string
+	PORT_APP             string
 	API_GATEWAY         string
 	URL_PRODUCT_SERVICE string
 	REDIS_HOST          string

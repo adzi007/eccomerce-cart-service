@@ -1,26 +1,41 @@
-FROM golang:1.23.4-alpine AS builder
+# Stage 1: Builder (Debian-based for CGO support)
+FROM golang:1.23.4 AS builder
 
-# Set the working directory
+# Enable CGO
+ENV CGO_ENABLED=1
+
+# Install required build tools for go-sqlite3
+RUN apt-get update && apt-get install -y gcc sqlite3 libsqlite3-dev
+
 WORKDIR /app
 
-# Copy the Go source code and .env file to the working directory
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
+
 COPY . .
 
-# Build the Go application
+# Build main app
 RUN go build -o main .
 
-# Build migration binary too
+# Build migration binary
 RUN go build -o migrate internal/migration/app_db_migration.go
 
-# Create a new stage for the final image
-FROM alpine:latest
+# Stage 2: Minimal runtime image (use `distroless` or slim Alpine with CGO support)
+FROM debian:bookworm-slim
 
-# Copy the built binary from the builder stage
+# Create non-root user (optional security)
+RUN useradd -m appuser
+
+# Copy binaries and env file
 COPY --from=builder /app/main /
-# Copy the .env file into the root directory of the final image
 COPY --from=builder /app/migrate /migrate
-
 COPY --from=builder /app/.env /
 
-# Set the command to run the binary
+# Optional: Copy SSL certs if needed
+RUN apt-get update && apt-get install -y ca-certificates && rm -rf /var/lib/apt/lists/*
+
+# Switch to non-root
+USER appuser
+
 CMD ["/main"]

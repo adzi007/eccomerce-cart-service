@@ -76,7 +76,7 @@ cd ecommerce-cart-service
 ```
 2. CD into the ecommerce-cart-service directory and create an .env file or edit from .env.example following with fields bellow
 ```
-PORT_AP=5000
+PORT_APP=5000
 DB_HOST=ecommerce-mysql-db
 DB_PORT=3306
 DB_USERNAME=YOUR_DB_USERNAME
