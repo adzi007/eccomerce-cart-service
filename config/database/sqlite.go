@@ -3,6 +3,9 @@ package database
 import (
 	"cart-service/config"
 	"fmt"
+	"log"
+	"os"
+	"path/filepath"
 	"time"
 
 	"gorm.io/driver/sqlite"
@@ -22,6 +25,11 @@ func NewSqliteDatabase() Database {
 
 	if dbName == "" {
 		dbName = "ecommerce-cart.db" // Default filename if DB_NAME is empty
+	}
+
+	// Ensure parent dir exists
+	if err := os.MkdirAll(filepath.Dir(dbName), os.ModePerm); err != nil {
+		log.Fatalf("Failed to create parent directory for SQLite DB: %v", err)
 	}
 
 	dsn := fmt.Sprintf("%s", dbName)
