@@ -6,7 +6,6 @@ import (
 	"cart-service/pkg/logger"
 	"cart-service/pkg/monitoring"
 	"cart-service/server"
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -14,6 +13,8 @@ import (
 	"time"
 
 	"github.com/gofiber/contrib/fiberzerolog"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 )
 
 //	@title			Ecommerce Cart Service
@@ -30,7 +31,7 @@ func main() {
 	// db := database.NewMysqlDatabase()
 	var db database.Database
 
-	fmt.Println("DB_DRIVER >>>>> ", config.ENV.DB_DRIVER)
+	// fmt.Println("DB_DRIVER >>>>> ", config.ENV.DB_DRIVER)
 
 	if config.ENV.DB_DRIVER == "sqlite" {
 		db = database.NewSqliteDatabase()
@@ -42,6 +43,19 @@ func main() {
 
 	servernya.Use(fiberzerolog.New(fiberzerolog.Config{
 		Logger: &mylog,
+	}))
+
+	servernya.Use(limiter.New(limiter.Config{
+		Max:        10,               // 10 requests
+		Expiration: 30 * time.Second, // per 30 seconds
+		KeyGenerator: func(c *fiber.Ctx) string {
+			return c.IP() // limit per IP
+		},
+		LimitReached: func(c *fiber.Ctx) error {
+			return c.Status(fiber.StatusTooManyRequests).JSON(fiber.Map{
+				"error": "Too many requests",
+			})
+		},
 	}))
 
 	// Register Prometheus metrics
