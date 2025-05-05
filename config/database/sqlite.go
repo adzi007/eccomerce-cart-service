@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/k0kubun/pp/v3"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -22,6 +23,8 @@ var sqliteInstance *sqliteDatabase
 func NewSqliteDatabase() Database {
 
 	dbName := config.ENV.DB_NAME
+
+	pp.Println("dbName >>> ", dbName)
 
 	if dbName == "" {
 		dbName = "ecommerce-cart.db" // Default filename if DB_NAME is empty

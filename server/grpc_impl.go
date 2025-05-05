@@ -30,7 +30,10 @@ func NewGrpcServer(db database.Database) GrpcServer {
 
 func (s *grpcServer) StartGRPCServer() {
 
-	lis, err := net.Listen("tcp", ":9001")
+	grpcPort := config.ENV.GRPC_PORT
+
+	lis, err := net.Listen("tcp", ":"+grpcPort)
+
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

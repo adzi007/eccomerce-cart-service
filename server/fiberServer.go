@@ -18,6 +18,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger" // swagger handler
+	"github.com/k0kubun/pp/v3"
 )
 
 type fiberServer struct {
@@ -51,13 +52,17 @@ func (s *fiberServer) Start() {
 	// 	return c.Status(200).SendString("Hello from Fiber! ini pesan dari admin")
 	// })
 
+	portApp := config.ENV.PORT_APP
+
+	pp.Println("portApp >>>> ", portApp)
+
 	logger.Info().Msg("This is an info message")
 	// logger.Warn().Str("user", "john_doe").Msg("This is a warning message")
 	logger.Warn().Msg("This is a warning message")
 
 	s.initializeCartServiceHttpHandler()
 
-	log.Fatal(s.app.Listen(":5000"))
+	log.Fatal(s.app.Listen(":" + portApp))
 }
 
 func (s *fiberServer) initializeCartServiceHttpHandler() {

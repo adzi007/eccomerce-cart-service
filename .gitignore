@@ -5,3 +5,4 @@ tmp/
 tmp/main.exe
 ecommerce_app
 data/
+cart.db

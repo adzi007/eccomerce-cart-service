@@ -7,10 +7,12 @@ services:
       - ecommerce-network
     ports:
       - "${PORT_APP}:${PORT_APP}"
-      - "9001:9001"
+      - "${GRPC_PORT}:${GRPC_PORT}"
     volumes:
       - ./data:/data
     environment:
+      - PORT_APP=${PORT_APP}
+      - GRPC_PORT=${GRPC_PORT}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_USER=${DB_USERNAME}
