@@ -226,12 +226,15 @@ func (c *CartUsecaseImpl) DeleteCartByUser(userId string) error {
 
 func (c *CartUsecaseImpl) Check() error {
 
-	pp.Print("test redissssss ==============>")
+	pp.Print("test redissssss xxxx ==============>")
+
+	fmt.Println("test redissssss xxxx ==============>")
 
 	testRedis, err := c.cache.Get("product:5")
 
 	if err != nil {
 		pp.Print("error get redis ", err)
+		fmt.Println("error get redis >>> ", err)
 	}
 
 	pp.Print("testRedis >>> ", testRedis)
